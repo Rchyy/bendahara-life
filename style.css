@@ -1,0 +1,67 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #f5f7fa;
+  padding: 20px;
+}
+
+h2, h3 {
+  margin: 10px 0;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 10px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+  font-size: 13px;
+}
+
+thead th {
+  background: #f1f3f4;
+  position: sticky;
+  top: 0;
+}
+
+td:first-child {
+  text-align: left;
+  font-weight: 500;
+  background: #fafafa;
+  position: sticky;
+  left: 0;
+}
+
+td.bayar {
+  background: #e6f4ea;
+  color: #1e8e3e;
+  font-weight: bold;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  margin: 5px 0;
+}
+
+button {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.keluar-table {
+  margin-top: 10px;
+}

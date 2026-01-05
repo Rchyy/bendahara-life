@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Kas Kelas</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2>📊 Kas Kelas</h2>
+
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>Nama</th>
+        <th>M1</th><th>M2</th><th>M3</th><th>M4</th><th>M5</th>
+        <th>M6</th><th>M7</th><th>M8</th><th>M9</th><th>M10</th>
+        <th>M11</th><th>M12</th><th>M13</th><th>M14</th><th>M15</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+
+<h3>💰 Total Kas: Rp <span id="total">0</span></h3>
+
+<hr>
+
+<h3>➖ Pengeluaran</h3>
+
+<input type="text" id="ket" placeholder="Keterangan pengeluaran">
+<input type="number" id="keluar" placeholder="Jumlah (contoh 5000)">
+<button onclick="tambahPengeluaran()">Tambah Pengeluaran</button>
+
+<table class="keluar-table">
+  <thead>
+    <tr>
+      <th>Keterangan</th>
+      <th>Jumlah</th>
+      <th>Aksi</th>
+    </tr>
+  </thead>
+  <tbody id="keluarBody"></tbody>
+</table>
+
+<script src="script.js"></script>
+</body>
+</html>
