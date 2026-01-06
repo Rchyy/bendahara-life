@@ -2,48 +2,239 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Kas Kelas</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kas Kelas Digital</title>
+  <link href="style.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
 </head>
 <body>
 
-<h2>📊 Kas Kelas</h2>
+<div class="container">
+  <h2>📊 Kas Kelas Digital</h2>
 
-<div class="table-wrapper">
-  <table>
-    <thead>
-      <tr>
-        <th>Nama</th>
-        <th>M1</th><th>M2</th><th>M3</th><th>M4</th><th>M5</th>
-        <th>M6</th><th>M7</th><th>M8</th><th>M9</th><th>M10</th>
-        <th>M11</th><th>M12</th><th>M13</th><th>M14</th><th>M15</th>
-      </tr>
-    </thead>
-    <tbody id="tbody"></tbody>
-  </table>
+  <!-- STATISTIK -->
+  <div class="stats-container">
+    <div class="stat-card">
+      <h4>💰 Total Pemasukan</h4>
+      <div class="amount" id="totalMasuk">Rp 0</div>
+    </div>
+    <div class="stat-card">
+      <h4>➖ Total Pengeluaran</h4>
+      <div class="amount" id="totalKeluar">Rp 0</div>
+    </div>
+    <div class="stat-card">
+      <h4>💵 Saldo Akhir</h4>
+      <div class="amount" id="saldoAkhir">Rp 0</div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- TOMBOL BUKA MODAL -->
+  <div class="button-group">
+    <button class="btn-primary" onclick="window.bukaModalPemasukan()">
+      <i class="fas fa-plus-circle"></i> Tambah Pemasukan
+    </button>
+    <button class="btn-secondary" onclick="window.bukaModalPengeluaran()">
+      <i class="fas fa-minus-circle"></i> Tambah Pengeluaran
+    </button>
+  </div>
+
+  <hr>
+
+  <!-- FILTER TABEL PEMASUKAN -->
+  <h3><i class="fas fa-table"></i> Tabel Pemasukan per Minggu</h3>
+  <div class="filter-section">
+    <div class="filter-group">
+      <label>Filter Bulan</label>
+      <select id="filterBulan">
+        <option value="">Semua Bulan</option>
+        <option value="1">Januari</option>
+        <option value="2">Februari</option>
+        <option value="3">Maret</option>
+        <option value="4">April</option>
+        <option value="5">Mei</option>
+        <option value="6">Juni</option>
+        <option value="7">Juli</option>
+        <option value="8">Agustus</option>
+        <option value="9">September</option>
+        <option value="10">Oktober</option>
+        <option value="11">November</option>
+        <option value="12">Desember</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Filter Tahun</label>
+      <select id="filterTahun">
+        <option value="">Semua Tahun</option>
+        <option value="2025">2025</option>
+        <option value="2024">2024</option>
+        <option value="2023">2023</option>
+      </select>
+    </div>
+    <button onclick="window.filterPemasukan()" style="align-self: flex-end;">
+      <i class="fas fa-filter"></i> Terapkan Filter
+    </button>
+  </div>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Nama Siswa</th>
+          <th>Bulan</th>
+          <th>Tahun</th>
+          <th>Minggu 1</th>
+          <th>Minggu 2</th>
+          <th>Minggu 3</th>
+          <th>Minggu 4</th>
+          <th>Total</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="pemasukanBody">
+        <tr>
+          <td colspan="9" class="loading">
+            <i class="fas fa-spinner fa-spin"></i> Memuat data pemasukan...
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr>
+
+  <!-- TABEL PENGELUARAN -->
+  <h3><i class="fas fa-list"></i> Tabel Pengeluaran</h3>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Keterangan</th>
+          <th>Jumlah</th>
+          <th>Tanggal Input</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="pengeluaranBody">
+        <tr>
+          <td colspan="4" class="loading">
+            <i class="fas fa-spinner fa-spin"></i> Memuat data pengeluaran...
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 
-<h3>💰 Total Kas: Rp <span id="total">0</span></h3>
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
 
-<hr>
+<!-- Alert Overlay -->
+<div class="alert-overlay" id="alertOverlay">
+  <div class="alert-box">
+    <div class="alert-header" id="alertHeader">
+      <i class="alert-header-icon" id="alertIcon"></i>
+      <div class="alert-title" id="alertTitle"></div>
+    </div>
+    <div class="alert-body" id="alertBody"></div>
+    <div class="alert-footer">
+      <button class="alert-btn alert-btn-secondary" id="alertCancelBtn" style="display:none;">Batal</button>
+      <button class="alert-btn alert-btn-primary" id="alertOkBtn">OK</button>
+    </div>
+  </div>
+</div>
 
-<h3>➖ Pengeluaran</h3>
+<!-- MODAL PEMASUKAN -->
+<div id="modalPemasukan" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="fas fa-plus-circle"></i> Input Pemasukan</h3>
+      <span class="close" onclick="window.tutupModalPemasukan()">&times;</span>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Pilih Siswa</label>
+          <select id="siswaSelect">
+            <option value="">-- Pilih Siswa --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Bulan</label>
+          <select id="bulanMasuk">
+            <option value="1">Januari</option>
+            <option value="2">Februari</option>
+            <option value="3">Maret</option>
+            <option value="4">April</option>
+            <option value="5">Mei</option>
+            <option value="6">Juni</option>
+            <option value="7">Juli</option>
+            <option value="8">Agustus</option>
+            <option value="9">September</option>
+            <option value="10">Oktober</option>
+            <option value="11">November</option>
+            <option value="12">Desember</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tahun</label>
+          <input type="number" id="tahunMasuk" value="2025" min="2020" max="2030">
+        </div>
+        <div class="form-group">
+          <label>Minggu Ke-</label>
+          <select id="mingguMasuk">
+            <option value="1">Minggu 1</option>
+            <option value="2">Minggu 2</option>
+            <option value="3">Minggu 3</option>
+            <option value="4">Minggu 4</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Jumlah (Rp)</label>
+          <input type="number" id="jumlahMasuk" value="2000" min="0">
+        </div>
+        <div class="form-group">
+          <label>Keterangan</label>
+          <select id="keteranganMasuk">
+            <option value="sedekah">Sedekah</option>
+            <option value="lunas">Lunas</option>
+          </select>
+        </div>
+      </div>
+      <button onclick="window.tambahPemasukan()">
+        <i class="fas fa-save"></i> Simpan Pemasukan
+      </button>
+    </div>
+  </div>
+</div>
 
-<input type="text" id="ket" placeholder="Keterangan pengeluaran">
-<input type="number" id="keluar" placeholder="Jumlah (contoh 5000)">
-<button onclick="tambahPengeluaran()">Tambah Pengeluaran</button>
+<!-- MODAL PENGELUARAN -->
+<div id="modalPengeluaran" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="fas fa-minus-circle"></i> Input Pengeluaran</h3>
+      <span class="close" onclick="window.tutupModalPengeluaran()">&times;</span>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Jumlah (Rp)</label>
+          <input type="number" id="jumlahKeluar" min="0">
+        </div>
+        <div class="form-group">
+          <label>Keterangan</label>
+          <input type="text" id="keteranganKeluar" placeholder="Contoh: Beli spidol">
+        </div>
+      </div>
+      <button onclick="window.tambahPengeluaran()">
+        <i class="fas fa-save"></i> Simpan Pengeluaran
+      </button>
+    </div>
+  </div>
+</div>
 
-<table class="keluar-table">
-  <thead>
-    <tr>
-      <th>Keterangan</th>
-      <th>Jumlah</th>
-      <th>Aksi</th>
-    </tr>
-  </thead>
-  <tbody id="keluarBody"></tbody>
-</table>
+<script type="module" src="script.js"></script>
 
-<script src="script.js"></script>
 </body>
 </html>
