@@ -46,8 +46,12 @@
   <h3><i class="fas fa-table"></i> Tabel Pemasukan per Minggu</h3>
   <div class="filter-section">
     <div class="filter-group">
+      <label>Cari Nama Siswa</label>
+      <input type="text" id="searchNama" placeholder="Ketik nama siswa..." oninput="window.filterPemasukan()">
+    </div>
+    <div class="filter-group">
       <label>Filter Bulan</label>
-      <select id="filterBulan">
+      <select id="filterBulan" onchange="window.filterPemasukan()">
         <option value="">Semua Bulan</option>
         <option value="1">Januari</option>
         <option value="2">Februari</option>
@@ -65,11 +69,11 @@
     </div>
     <div class="filter-group">
       <label>Filter Tahun</label>
-      <select id="filterTahun">
+      <select id="filterTahun" onchange="window.filterPemasukan()">
         <option value="">Semua Tahun</option>
         <option value="2025">2025</option>
-        <option value="2024">2024</option>
-        <option value="2023">2023</option>
+        <option value="2026">2026</option>
+        <option value="2027">2027</option>
       </select>
     </div>
     <button onclick="window.filterPemasukan()" style="align-self: flex-end;">
@@ -90,11 +94,12 @@
           <th>Minggu 4</th>
           <th>Total</th>
           <th>Status</th>
+          <th>Aksi</th>
         </tr>
       </thead>
       <tbody id="pemasukanBody">
         <tr>
-          <td colspan="9" class="loading">
+          <td colspan="10" class="loading">
             <i class="fas fa-spinner fa-spin"></i> Memuat data pemasukan...
           </td>
         </tr>
@@ -149,7 +154,7 @@
 <div id="modalPemasukan" class="modal">
   <div class="modal-content">
     <div class="modal-header">
-      <h3><i class="fas fa-plus-circle"></i> Input Pemasukan</h3>
+      <h3 id="modalTitle"><i class="fas fa-plus-circle"></i> Input Pemasukan</h3>
       <span class="close" onclick="window.tutupModalPemasukan()">&times;</span>
     </div>
     <div class="modal-body">
@@ -192,23 +197,18 @@
         </div>
         <div class="form-group">
           <label>Jumlah (Rp)</label>
-          <input type="number" id="jumlahMasuk" value="2000" min="0">
-        </div>
-        <div class="form-group">
-          <label>Keterangan</label>
-          <select id="keteranganMasuk">
-            <option value="sedekah">Sedekah</option>
-            <option value="lunas">Lunas</option>
-          </select>
+          <input type="number" id="jumlahMasuk" value="5000" min="0" placeholder="Minimal Rp 5.000 untuk lunas">
         </div>
       </div>
-      <button onclick="window.tambahPemasukan()">
+      <div style="background: #e3f2fd; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 13px; color: #1565c0;">
+        <i class="fas fa-info-circle"></i> <strong>Info:</strong> Jumlah < Rp 5.000 = <span style="color:#c62828">Belum Lunas ✗</span> | Jumlah ≥ Rp 5.000 = <span style="color:#2e7d32">Lunas ✓</span>
+      </div>
+      <button id="btnSimpanPemasukan" onclick="window.tambahPemasukan()">
         <i class="fas fa-save"></i> Simpan Pemasukan
       </button>
     </div>
   </div>
 </div>
-
 <!-- MODAL PENGELUARAN -->
 <div id="modalPengeluaran" class="modal">
   <div class="modal-content">
