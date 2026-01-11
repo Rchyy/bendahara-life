@@ -130,108 +130,15 @@ window.tutupModalPengeluaran = function() {
   document.getElementById("modalPengeluaran").style.display = "none";
 };
 
-// FUNGSI MODAL AKSI (Pilih Minggu untuk Edit/Hapus)
-window.bukaModalAksiWrapper = function(siswaId, namaSiswa, bulan, tahun, key) {
-  const mingguData = window.groupedPemasukanData[key].minggu;
-  window.bukaModalAksi(siswaId, namaSiswa, bulan, tahun, mingguData);
-};
-
-window.bukaModalAksi = function(siswaId, namaSiswa, bulan, tahun, mingguData) {
-  window.currentActionData = { siswaId, namaSiswa, bulan, tahun, mingguData };
-  
-  document.getElementById("actionModalTitle").textContent = `Kelola Data: ${namaSiswa}`;
-  document.getElementById("actionModalSubtitle").textContent = `${namaBulan[bulan]} ${tahun}`;
-  
-  // Render tombol minggu
-  const container = document.getElementById("weekButtonsContainer");
-  container.innerHTML = '';
-  
-  for (let m = 1; m <= 4; m++) {
-    const data = mingguData[m];
-    const btn = document.createElement('div');
-    btn.className = `week-btn ${data ? 'has-data' : 'no-data'}`;
-    
-    if (data) {
-      btn.onclick = () => window.pilihMinggu(m);
-      btn.innerHTML = `
-        <div class="week-label">Minggu ${m}</div>
-        <div class="week-amount">Rp ${data.jumlah.toLocaleString('id-ID')}</div>
-        <div style="font-size: 11px; color: #666;">Klik untuk kelola</div>
-      `;
-    } else {
-      btn.innerHTML = `
-        <div class="week-label">Minggu ${m}</div>
-        <div style="font-size: 13px; color: #999;">Belum ada data</div>
-      `;
-    }
-    
-    container.appendChild(btn);
-  }
-  
-  document.getElementById("actionModal").style.display = "block";
-};
-
-window.tutupModalAksi = function() {
-  document.getElementById("actionModal").style.display = "none";
-  delete window.currentActionData;
-  delete window.selectedWeek;
-};
-
-window.pilihMinggu = function(minggu) {
-  window.selectedWeek = minggu;
-  
-  // Highlight minggu yang dipilih
-  const buttons = document.querySelectorAll('.week-btn');
-  buttons.forEach((btn, index) => {
-    if (index + 1 === minggu) {
-      btn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-      btn.style.color = 'white';
-      btn.querySelector('.week-label').style.color = 'white';
-      btn.querySelector('.week-amount').style.color = 'white';
-    }
-  });
-  
-  // Tampilkan tombol aksi
-  document.getElementById("actionButtons").style.display = 'flex';
-};
-
-window.aksEditMinggu = function() {
-  if (!window.selectedWeek || !window.currentActionData) return;
-  
-  const { siswaId, bulan, tahun, mingguData } = window.currentActionData;
-  const data = mingguData[window.selectedWeek];
-  
-  if (data) {
-    window.editPemasukan(data.id, siswaId, bulan, tahun, window.selectedWeek, data.jumlah, data.keterangan);
-    window.tutupModalAksi();
-  }
-};
-
-window.aksHapusMinggu = function() {
-  if (!window.selectedWeek || !window.currentActionData) return;
-  
-  const { namaSiswa, mingguData } = window.currentActionData;
-  const data = mingguData[window.selectedWeek];
-  
-  if (data) {
-    window.hapusPemasukan(data.id, namaSiswa, window.selectedWeek);
-    window.tutupModalAksi();
-  }
-};
-
 window.onclick = function(event) {
   const modalPemasukan = document.getElementById("modalPemasukan");
   const modalPengeluaran = document.getElementById("modalPengeluaran");
-  const actionModal = document.getElementById("actionModal");
   
   if (event.target === modalPemasukan) {
     modalPemasukan.style.display = "none";
   }
   if (event.target === modalPengeluaran) {
     modalPengeluaran.style.display = "none";
-  }
-  if (event.target === actionModal) {
-    window.tutupModalAksi();
   }
 };
 
@@ -296,7 +203,7 @@ function renderPemasukan(filterBulan = "", filterTahun = "", searchNama = "") {
   if (Object.keys(dataSiswa).length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="10" class="loading">
+        <td colspan="8" class="loading">
           <i class="fas fa-spinner fa-spin"></i> Memuat data siswa...
         </td>
       </tr>`;
@@ -357,7 +264,6 @@ function renderPemasukan(filterBulan = "", filterTahun = "", searchNama = "") {
     const group = grouped[key];
     
     let total = 0;
-    let statusLunas = false;
     
     html += `<tr>`;
     html += `<td>${namaSiswa}</td>`;
@@ -373,28 +279,12 @@ function renderPemasukan(filterBulan = "", filterTahun = "", searchNama = "") {
         const klass = keterangan === "lunas" ? "lunas" : "belumLunas";
         html += `<td class="${klass}">Rp ${mingguData.jumlah.toLocaleString('id-ID')}</td>`;
         total += mingguData.jumlah;
-        if (keterangan === "lunas") statusLunas = true;
       } else {
         html += `<td>-</td>`;
       }
     }
     
     html += `<td style="font-weight:bold">Rp ${total.toLocaleString('id-ID')}</td>`;
-    html += `<td>${statusLunas ? '<span style="color:#2e7d32;font-weight:bold;">✓ LUNAS</span>' : '<span style="color:#c62828;font-weight:bold;">✗ BELUM LUNAS</span>'}</td>`;
-    
-    // Cek apakah ada data untuk ditampilkan tombol kelola
-    const hasAnyData = group && Object.keys(group.minggu).length > 0;
-    
-    html += `<td>`;
-    if (hasAnyData) {
-      html += `<button class="btn-action" onclick="bukaModalAksiWrapper('${siswaId}', '${namaSiswa.replace(/'/g, "\\'")}', ${group.bulan}, ${group.tahun}, '${key}')" title="Kelola Data">
-        <i class="fas fa-cog"></i> Kelola
-      </button>`;
-    } else {
-      html += '-';
-    }
-    html += `</td>`;
-    
     html += `</tr>`;
   });
   
@@ -402,7 +292,7 @@ function renderPemasukan(filterBulan = "", filterTahun = "", searchNama = "") {
   if (!hasMatchingStudent) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="10" class="empty-state">
+        <td colspan="8" class="empty-state">
           <i class="fas fa-search"></i>
           <p>Tidak ada siswa yang sesuai dengan pencarian "${searchNama}"</p>
         </td>
@@ -532,26 +422,6 @@ window.tambahPemasukan = async function() {
   }
 };
 
-// EDIT PEMASUKAN
-window.editPemasukan = function(id, siswaId, bulan, tahun, minggu, jumlah, keterangan) {
-  // Set mode edit
-  window.editingPemasukanId = id;
-  
-  // Ubah judul dan tombol modal
-  document.getElementById("modalTitle").innerHTML = '<i class="fas fa-edit"></i> Edit Pemasukan';
-  document.getElementById("btnSimpanPemasukan").innerHTML = '<i class="fas fa-save"></i> Update Pemasukan';
-  
-  // Isi form dengan data yang akan diedit (tanpa field keterangan karena otomatis)
-  document.getElementById("siswaSelect").value = siswaId;
-  document.getElementById("bulanMasuk").value = bulan;
-  document.getElementById("tahunMasuk").value = tahun;
-  document.getElementById("mingguMasuk").value = minggu;
-  document.getElementById("jumlahMasuk").value = jumlah;
-  
-  // Buka modal
-  document.getElementById("modalPemasukan").style.display = "block";
-};
-
 // TAMBAH PENGELUARAN
 window.tambahPengeluaran = async function() {
   const jumlah = parseInt(document.getElementById("jumlahKeluar").value);
@@ -577,22 +447,6 @@ window.tambahPengeluaran = async function() {
   } catch (error) {
     console.error("Error menambah pengeluaran:", error);
     showAlert('error', 'Gagal!', 'Gagal menambah pengeluaran: ' + error.message);
-  }
-};
-
-// HAPUS PEMASUKAN
-window.hapusPemasukan = async function(id, namaSiswa, minggu) {
-  const confirmed = await showAlert('warning', 'Konfirmasi Hapus', 
-    `Yakin ingin menghapus pemasukan ${namaSiswa} minggu ${minggu}? Tindakan ini tidak dapat dibatalkan.`, true);
-  
-  if (!confirmed) return;
-
-  try {
-    await deleteDoc(doc(db, "pemasukan", id));
-    showToast('success', 'Berhasil Dihapus!', `Data pemasukan ${namaSiswa} minggu ${minggu} telah dihapus dari sistem`);
-  } catch (error) {
-    console.error("Error menghapus pemasukan:", error);
-    showAlert('error', 'Gagal!', 'Gagal menghapus pemasukan: ' + error.message);
   }
 };
 
